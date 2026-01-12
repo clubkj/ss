@@ -1,0 +1,269 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Goods Transport - Book Your Vehicle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="A comprehensive delivery management platform for customers, drivers, and administrators">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/images/icon-192x192.png">
+<link rel="apple-touch-icon" href="/images/icon-192x192.png">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .user-header {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(255, 107, 53, 0.2);
+  }
+
+  .user-header.hidden {
+    display: none;
+  }
+
+  .user-header .info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .user-header .info-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .user-header .info-text strong {
+    font-size: 14px;
+    opacity: 0.9;
+  }
+
+  .user-header .info-text span {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .user-header button {
+    background: white;
+    color: #ff6b35;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  .user-header button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .auth-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .auth-buttons.hidden {
+    display: none;
+  }
+
+  .auth-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s;
+    display: inline-block;
+  }
+
+  .auth-btn.login {
+    background: #667eea;
+    color: white;
+  }
+
+  .auth-btn.login:hover {
+    background: #5568d3;
+    transform: translateY(-2px);
+  }
+
+  .auth-btn.signup {
+    background: #25d366;
+    color: white;
+  }
+
+  .auth-btn.signup:hover {
+    background: #1ba85c;
+    transform: translateY(-2px);
+  }
+</style>
+</head>
+<body>
+
+<!-- User Info Header (Logged In) -->
+<div class="user-header hidden" id="userHeader">
+  <div class="info">
+    <div style="font-size: 28px;">👤</div>
+    <div class="info-text">
+      <strong>Welcome back</strong>
+      <span id="userNameDisplay">Customer</span>
+    </div>
+  </div>
+  <button onclick="logoutUser()">🔓 Logout</button>
+</div>
+
+<!-- Auth Buttons (Not Logged In) -->
+<div class="auth-buttons" id="authButtons">
+  <a href="user.html" class="auth-btn login">🔑 Sign In</a>
+  <a href="user.html" class="auth-btn signup">📝 Sign Up</a>
+</div>
+
+<header class="fade">
+  <h1>🚛 Reliable Goods Transport</h1>
+  <p>Distance-based pricing • Free booking • Phone confirmation</p>
+  <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+    <a href="book.html" class="btn">Book Vehicle Now</a>
+    <a id="viewBookingsBtn" href="user.html" class="btn" style="background: #667eea;">View My Bookings</a>
+  </div>
+
+  <!-- How It Works Section -->
+  <div style="margin-top: 50px; padding-top: 40px; border-top: 2px solid rgba(255, 255, 255, 0.3);">
+    <h3 style="color: white; font-size: 24px; margin-bottom: 30px;">⚡ How It Works</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 800px; margin: 0 auto;">
+      <div style="background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
+        <div style="font-size: 40px; margin-bottom: 10px;">📝</div>
+        <div style="font-weight: 600; color: white;">Book Online</div>
+        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.85); margin-top: 8px;">Select pickup & drop location</div>
+      </div>
+      <div style="background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
+        <div style="font-size: 40px; margin-bottom: 10px;">📞</div>
+        <div style="font-weight: 600; color: white;">We Confirm</div>
+        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.85); margin-top: 8px;">Get call confirmation in minutes</div>
+      </div>
+      <div style="background: rgba(255, 255, 255, 0.15); padding: 20px; border-radius: 12px; backdrop-filter: blur(10px);">
+        <div style="font-size: 40px; margin-bottom: 10px;">✅</div>
+        <div style="font-weight: 600; color: white;">Goods Delivered</div>
+        <div style="font-size: 13px; color: rgba(255, 255, 255, 0.85); margin-top: 8px;">Safe & timely delivery</div>
+      </div>
+    </div>
+  </div>
+
+
+</header>
+
+
+
+<footer>
+  © 22026 Goods Transport Services | All rights reserved [prototype<br>
+  <small style="font-size: 12px; opacity: 0.7; margin-top: 10px;">
+    <a href="driver.html" style="color: inherit; text-decoration: none;">🚗 Driver Portal</a>
+  </small>
+</footer>
+
+<a href="https://wa.me/916361398007" class="whatsapp">💬 WhatsApp Support</a>
+
+<!-- Firebase Scripts -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyAI4QSMoukoQR8xivZr-0eUUc8kKARkOd4",
+    authDomain: "goods-5097f.firebaseapp.com",
+    projectId: "goods-5097f",
+    storageBucket: "goods-5097f.firebasestorage.app",
+    messagingSenderId: "693060796720",
+    appId: "1:693060796720:web:091388170ce0c7980348f5",
+    measurementId: "G-JT7D3G5TG7"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // Check authentication status on page load
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("✓ Index page loaded");
+    
+    auth.onAuthStateChanged(user => {
+      const userHeader = document.getElementById("userHeader");
+      const authButtons = document.getElementById("authButtons");
+      const viewBtn = document.getElementById("viewBookingsBtn");
+      
+      if (user) {
+        console.log("✓ User logged in:", user.email);
+        
+        // Load customer profile
+        db.collection("customers").doc(user.uid).get().then(doc => {
+          if (doc.exists) {
+            const customerData = doc.data();
+            document.getElementById("userNameDisplay").textContent = customerData.name || user.email;
+            console.log("✓ Customer name:", customerData.name);
+          } else {
+            document.getElementById("userNameDisplay").textContent = user.email;
+          }
+        });
+        
+        // Show user header, hide auth buttons
+        userHeader.classList.remove("hidden");
+        authButtons.classList.add("hidden");
+        if (viewBtn) viewBtn.href = "my-orders.html";
+      } else {
+        console.log("✗ User not logged in");
+        
+        // Hide user header, show auth buttons
+        userHeader.classList.add("hidden");
+        authButtons.classList.remove("hidden");
+        if (viewBtn) viewBtn.href = "user.html";
+      }
+    });
+
+    // Ensure View My Bookings always checks auth before navigating
+    const viewBtnEl = document.getElementById("viewBookingsBtn");
+    if (viewBtnEl) {
+      viewBtnEl.addEventListener("click", function(e) {
+        e.preventDefault();
+        if (auth.currentUser) {
+          window.location.href = "my-orders.html";
+        } else {
+          window.location.href = "user.html";
+        }
+      });
+    }
+  });
+
+  function logoutUser() {
+    if (confirm("Are you sure you want to logout?")) {
+      auth.signOut().then(() => {
+        console.log("✓ User logged out");
+        window.location.reload();
+      }).catch(err => {
+        alert("Error logging out: " + err.message);
+      });
+    }
+  }
+
+  // Register Service Worker for offline support and PWA installation
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').then(registration => {
+        console.log('✓ Service Worker registered:', registration);
+      }).catch(err => {
+        console.warn('✗ Service Worker registration failed:', err);
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

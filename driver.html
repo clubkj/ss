@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Login - Goods Vehicle Booking</title>
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A comprehensive delivery management platform">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/images/icon-192x192.png">
+  <link rel="apple-touch-icon" href="/images/icon-192x192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .auth-container {
+      max-width: 400px;
+      margin: 60px auto;
+      padding: 30px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .auth-container h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 30px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #555;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #2196f3;
+      box-shadow: 0 0 5px rgba(33,150,243,0.3);
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-primary:hover {
+      background: #1976d2;
+    }
+    .btn-primary:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .toggle-form {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+      color: #666;
+    }
+    .toggle-form a {
+      color: #2196f3;
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .toggle-form a:hover {
+      text-decoration: underline;
+    }
+    .error-msg {
+      color: #f44336;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .success-msg {
+      color: #4caf50;
+      font-size: 12px;
+      margin-top: 5px;
+    }
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .tab-buttons button {
+      flex: 1;
+      padding: 10px;
+      border: 2px solid #ddd;
+      background: white;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .tab-buttons button.active {
+      border-color: #2196f3;
+      background: #e3f2fd;
+      color: #2196f3;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h1>🚗 Driver Portal</h1>
+    
+    <div style="text-align: center; margin-bottom: 20px; color: #666; font-size: 14px;">
+      🔒 Existing Drivers Only
+    </div>
+
+    <!-- Sign In Form -->
+    <div id="loginForm" class="auth-form">
+      <div class="form-group">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••">
+      </div>
+      <button class="btn-primary" id="loginBtn">Sign In</button>
+      <div id="loginMsg"></div>
+    </div>
+
+    <div class="toggle-form">
+      Back to <a href="index.html">Home</a>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAI4QSMoukoQR8xivZr-0eUUc8kKARkOd4",
+      authDomain: "goods-5097f.firebaseapp.com",
+      projectId: "goods-5097f",
+      storageBucket: "goods-5097f.firebasestorage.app",
+      messagingSenderId: "693060796720",
+      appId: "1:693060796720:web:091388170ce0c7980348f5",
+      measurementId: "G-JT7D3G5TG7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    document.addEventListener("DOMContentLoaded", function() {
+
+      // Sign In
+      document.getElementById("loginBtn").addEventListener("click", async () => {
+        const email = document.getElementById("loginEmail").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const msg = document.getElementById("loginMsg");
+
+        if (!email || !password) {
+          msg.innerHTML = '<div class="error-msg">Enter email and password</div>';
+          return;
+        }
+
+        try {
+          const result = await auth.signInWithEmailAndPassword(email, password);
+          const uid = result.user.uid;
+          
+          // Ensure driver profile exists
+          const driverDoc = await db.collection("drivers").doc(uid).get();
+          if (!driverDoc.exists) {
+            // Create basic profile if missing
+            await db.collection("drivers").doc(uid).set({
+              uid,
+              email,
+              phone: "",
+              name: "",
+              createdAt: new Date().toISOString(),
+              status: "offline",
+              rating: 5.0,
+              totalRides: 0
+            }, { merge: true });
+            console.log("✓ Driver profile created on login");
+          }
+          
+          msg.innerHTML = '<div class="success-msg">✓ Signed in! Redirecting...</div>';
+          setTimeout(() => {
+            window.location.href = "dashboard.html";
+          }, 1000);
+        } catch (err) {
+          console.error("✗ Sign-in error:", err);
+          msg.innerHTML = `<div class="error-msg">✗ ${err.message}</div>`;
+        }
+      });
+
+      console.log("✓ Driver login page loaded");
+
+      // Register Service Worker for offline support and PWA installation
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.warn('Service Worker registration failed:', err);
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

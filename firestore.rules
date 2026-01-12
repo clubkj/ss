@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Allow anyone to create bookings (customer booking)
+    match /bookings/{document=**} {
+      allow create: if true;
+      allow read, update, delete: if true; // For now, allow all reads/updates (can restrict later)
+    }
+    
+    // Customer collection - anyone can read/create
+    match /customers/{document=**} {
+      allow create, read: if true;
+      allow update: if resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+    
+    // Driver collection - anyone can read/create
+    match /drivers/{document=**} {
+      allow create, read: if true;
+      allow update: if resource.data.uid == request.auth.uid;
+      allow delete: if false;
+    }
+    
+    // Notifications - allow creation and reading
+    match /notifications/{document=**} {
+      allow create, read: if true;
+      allow update, delete: if false;
+    }
+    
+    // Default deny all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

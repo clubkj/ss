@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Customer Login - Goods Vehicle Booking</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .auth-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+      width: 100%;
+      max-width: 400px;
+      padding: 40px;
+      margin: 20px;
+    }
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .auth-header h1 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 28px;
+    }
+    .auth-header p {
+      margin: 0;
+      color: #999;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #555;
+      font-size: 14px;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: all 0.3s;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 8px rgba(102, 126, 234, 0.2);
+    }
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 0;
+      background: none;
+      border: none;
+      color: #999;
+      font-weight: bold;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s;
+    }
+    .tab-btn.active {
+      color: #667eea;
+      border-bottom-color: #667eea;
+    }
+    .message {
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 15px;
+      font-size: 14px;
+      display: none;
+    }
+    .message.error {
+      background: #ffebee;
+      color: #c62828;
+      display: block;
+    }
+    .message.success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      display: block;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 13px;
+      color: #999;
+    }
+    .footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    .footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <h1>🚚 Goods Booking</h1>
+      <p>Fast & Reliable Goods Transport</p>
+    </div>
+
+    <div class="tab-buttons">
+      <button class="tab-btn active" data-tab="login">Sign In</button>
+      <button class="tab-btn" data-tab="signup">Sign Up</button>
+    </div>
+
+    <!-- Sign In Form -->
+    <div id="loginForm" class="auth-form">
+      <div class="form-group">
+        <label for="loginPhone">Phone Number</label>
+        <input type="tel" id="loginPhone" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••">
+      </div>
+      <button class="btn-primary" id="loginBtn">Sign In</button>
+      <div class="message" id="loginMsg"></div>
+    </div>
+
+    <!-- Sign Up Form -->
+    <div id="signupForm" class="auth-form" style="display:none;">
+      <div class="form-group">
+        <label for="signupName">Full Name</label>
+        <input type="text" id="signupName" placeholder="Your name">
+      </div>
+      <div class="form-group">
+        <label for="signupPhone">Phone Number</label>
+        <input type="tel" id="signupPhone" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label for="signupPassword">Password</label>
+        <input type="password" id="signupPassword" placeholder="Min 6 chars">
+      </div>
+      <button class="btn-primary" id="signupBtn">Create Account</button>
+      <div class="message" id="signupMsg"></div>
+    </div>
+
+    <div class="footer">
+      Not a customer? <a href="index.html">Go back home</a> | 
+      <a href="driver.html">Are you a driver?</a>
+    </div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAI4QSMoukoQR8xivZr-0eUUc8kKARkOd4",
+      authDomain: "goods-5097f.firebaseapp.com",
+      projectId: "goods-5097f",
+      storageBucket: "goods-5097f.firebasestorage.app",
+      messagingSenderId: "693060796720",
+      appId: "1:693060796720:web:091388170ce0c7980348f5",
+      measurementId: "G-JT7D3G5TG7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // Tab switching
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+          document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+          document.querySelectorAll(".auth-form").forEach(f => f.style.display = "none");
+          
+          this.classList.add("active");
+          const tab = this.dataset.tab;
+          document.getElementById(tab === "login" ? "loginForm" : "signupForm").style.display = "block";
+        });
+      });
+
+      // Sign In with phone + password (via email)
+      document.getElementById("loginBtn").addEventListener("click", async () => {
+        const phone = document.getElementById("loginPhone").value.trim();
+        const password = document.getElementById("loginPassword").value;
+        const msg = document.getElementById("loginMsg");
+
+        if (!phone || phone.length !== 10) {
+          showMessage(msg, "Enter a valid 10-digit phone number", "error");
+          return;
+        }
+
+        if (!password || password.length < 6) {
+          showMessage(msg, "Enter a valid password", "error");
+          return;
+        }
+
+        try {
+          // Get user by phone from Firestore
+          const customerDoc = await db.collection("customers").where("phone", "==", phone).limit(1).get();
+          if (customerDoc.empty) {
+            showMessage(msg, "Phone number not found", "error");
+            return;
+          }
+
+          const customerData = customerDoc.docs[0].data();
+          const email = customerData.email;
+
+          // Sign in with email and password
+          await auth.signInWithEmailAndPassword(email, password);
+          showMessage(msg, "✓ Signing in...", "success");
+          setTimeout(() => {
+            window.location.href = "booking.html";
+          }, 1000);
+        } catch (err) {
+          console.error("✗ Sign-in error:", err);
+          showMessage(msg, "Incorrect password", "error");
+        }
+      });
+
+      // Sign Up
+      document.getElementById("signupBtn").addEventListener("click", async () => {
+        const name = document.getElementById("signupName").value.trim();
+        const phone = document.getElementById("signupPhone").value.trim();
+        const email = document.getElementById("signupEmail").value.trim();
+        const password = document.getElementById("signupPassword").value;
+        const msg = document.getElementById("signupMsg");
+
+        if (!name || !phone || !email || !password) {
+          showMessage(msg, "All fields are required", "error");
+          return;
+        }
+
+        if (phone.length !== 10 || isNaN(phone)) {
+          showMessage(msg, "Phone must be 10 digits", "error");
+          return;
+        }
+
+        if (password.length < 6) {
+          showMessage(msg, "Password must be at least 6 characters", "error");
+          return;
+        }
+
+        try {
+          // Create auth user with email
+          const result = await auth.createUserWithEmailAndPassword(email, password);
+          const uid = result.user.uid;
+
+          // Save customer profile to Firestore
+          await db.collection("customers").doc(uid).set({
+            uid,
+            name,
+            phone,
+            email,
+            createdAt: new Date().toISOString(),
+            rating: 5.0,
+            totalBookings: 0
+          });
+
+          showMessage(msg, "✓ Account created! Signing in...", "success");
+          setTimeout(() => {
+            window.location.href = "booking.html";
+          }, 1500);
+        } catch (err) {
+          console.error("✗ Sign-up error:", err);
+          if (err.code === "auth/email-already-in-use") {
+            showMessage(msg, "Email already registered", "error");
+          } else {
+            showMessage(msg, err.message, "error");
+          }
+        }
+      });
+
+      console.log("✓ Customer auth page loaded");
+    });
+
+    function showMessage(element, text, type) {
+      element.className = "message " + type;
+      element.innerText = text;
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings - Goods Vehicle Booking</title>
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="A comprehensive delivery management platform">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" href="/images/icon-192x192.png">
+  <link rel="apple-touch-icon" href="/images/icon-192x192.png">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body {
+      background: #f9fafb;
+    }
+
+    .orders-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .orders-header h1 {
+      margin: 0 0 10px 0;
+      font-size: 28px;
+    }
+
+    .orders-header p {
+      margin: 0;
+      opacity: 0.9;
+    }
+
+    .orders-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .logout-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .logout-section h3 {
+      margin: 0;
+      color: #333;
+      font-size: 16px;
+    }
+
+    .logout-btn {
+      background: #667eea;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .booking-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 5px solid #667eea;
+      transition: all 0.3s;
+    }
+
+    .booking-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    .booking-card.new {
+      border-left-color: #f97316;
+    }
+
+    .booking-card.confirmed {
+      border-left-color: #3b82f6;
+    }
+
+    .booking-card.in-transit {
+      border-left-color: #f59e0b;
+    }
+
+    .booking-card.completed {
+      border-left-color: #10b981;
+      opacity: 0.85;
+    }
+
+    .booking-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+
+    .booking-route {
+      font-size: 18px;
+      font-weight: 700;
+      color: #333;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .status-badge.new {
+      background: #f97316;
+    }
+
+    .status-badge.confirmed {
+      background: #3b82f6;
+    }
+
+    .status-badge.in-transit {
+      background: #f59e0b;
+    }
+
+    .status-badge.completed {
+      background: #10b981;
+    }
+
+    .booking-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .detail-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .detail-label {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 12px;
+      margin-bottom: 3px;
+    }
+
+    .detail-value {
+      color: #374151;
+      font-size: 14px;
+    }
+
+    .detail-value a {
+      color: #25d366;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .detail-value a:hover {
+      text-decoration: underline;
+    }
+
+    .driver-section {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      border-left: 4px solid #3b82f6;
+      display: none;
+    }
+
+    .driver-section.show {
+      display: block;
+    }
+
+    .driver-section h4 {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+      font-size: 14px;
+    }
+
+    .driver-info {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+      font-size: 13px;
+    }
+
+    .driver-info-field {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .driver-info-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 3px;
+    }
+
+    .driver-info-value {
+      color: #666;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-track {
+      background: #667eea;
+      color: white;
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .btn-track:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    .btn-contact {
+      background: #25d366;
+      color: white;
+      flex: 1;
+      min-width: 100px;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-contact:hover {
+      background: #1ba85c;
+      transform: translateY(-2px);
+    }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: #9ca3af;
+    }
+
+    .empty-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+    }
+
+    .empty-text {
+      font-size: 18px;
+      color: #6b7280;
+      margin-bottom: 20px;
+    }
+
+    .empty-link {
+      background: #667eea;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      transition: all 0.3s;
+    }
+
+    .empty-link:hover {
+      background: #5568d3;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .booking-header {
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .booking-details {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .driver-info {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="orders-header">
+    <h1>📦 My Bookings</h1>
+    <p>Track and manage your transport bookings</p>
+  </div>
+
+  <div class="orders-container">
+    <div class="logout-section">
+      <h3>👤 Logged In</h3>
+      <button class="logout-btn" id="logoutBtn">🔓 Logout</button>
+    </div>
+
+    <div id="ordersList"></div>
+  </div>
+
+  <!-- Firebase Scripts -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyAI4QSMoukoQR8xivZr-0eUUc8kKARkOd4",
+      authDomain: "goods-5097f.firebaseapp.com",
+      projectId: "goods-5097f",
+      storageBucket: "goods-5097f.firebasestorage.app",
+      messagingSenderId: "693060796720",
+      appId: "1:693060796720:web:091388170ce0c7980348f5",
+      measurementId: "G-JT7D3G5TG7"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let currentCustomer = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      console.log("✓ My Orders page loaded");
+
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          console.log("✓ Customer logged in:", user.email);
+          loadCustomerBookings(user.uid);
+        } else {
+          console.log("✗ No user, redirecting to login...");
+          window.location.href = "user.html";
+        }
+      });
+
+      document.getElementById("logoutBtn").addEventListener("click", async () => {
+        await auth.signOut();
+        window.location.href = "user.html";
+      });
+    });
+
+    async function loadCustomerBookings(uid) {
+      try {
+        // Get customer info
+        let custDoc = await db.collection("customers").doc(uid).get();
+        if (!custDoc.exists) {
+          await db.collection("customers").doc(uid).set({
+            uid, email: auth.currentUser.email, phone: "", name: "", createdAt: new Date().toISOString()
+          });
+          custDoc = await db.collection("customers").doc(uid).get();
+        }
+        
+        currentCustomer = { uid, ...custDoc.data() };
+        console.log("✓ Customer loaded:", currentCustomer.email);
+
+        // Real-time listener for bookings where customer phone matches
+        if (currentCustomer.phone) {
+          setupListener(currentCustomer.phone);
+        } else {
+          // Try with email instead
+          setupListenerByUid(uid);
+        }
+      } catch (err) {
+        console.error("✗ Error loading customer:", err);
+      }
+    }
+
+    function setupListener(customerPhone) {
+      console.log("🎯 Setting up listener for phone:", customerPhone);
+      try {
+        // Use a one-time get() first to avoid realtime index errors,
+        // then attach a realtime listener only if results exist.
+        db.collection("bookings")
+          .where("phone", "==", customerPhone)
+          .orderBy("createdAt", "desc")
+          .get()
+          .then(snap => {
+            console.log("✓ Bookings fetched by phone:", snap.docs.length);
+            const bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (bookings.length) {
+              renderBookings(bookings);
+              // attach realtime listener to keep updates
+              db.collection("bookings")
+                .where("phone", "==", customerPhone)
+                .orderBy("createdAt", "desc")
+                .onSnapshot(snap2 => {
+                  const b = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+                  renderBookings(b);
+                }, err => {
+                  console.error("Realtime listener error (phone):", err);
+                });
+            } else {
+              // No bookings by phone — try UID fallback
+              setupListenerByUid(currentCustomer.uid);
+            }
+          })
+          .catch(err => {
+            console.error("✗ Query error by phone:", err);
+            // Try fallback to UID
+            setupListenerByUid(currentCustomer.uid);
+          });
+      } catch (err) {
+        console.error("✗ Setup error:", err);
+        setupListenerByUid(currentCustomer.uid);
+      }
+    }
+
+    function setupListenerByUid(uid) {
+      console.log("🎯 Setting up listener by customer UID");
+      try {
+        // Try a one-time fetch by customerId
+        db.collection("bookings")
+          .where("customerId", "==", uid)
+          .orderBy("createdAt", "desc")
+          .get()
+          .then(snap => {
+            console.log("✓ Bookings fetched by UID:", snap.docs.length);
+            const bookings = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            if (bookings.length) {
+              renderBookings(bookings);
+              // attach realtime listener for updates
+              db.collection("bookings")
+                .where("customerId", "==", uid)
+                .orderBy("createdAt", "desc")
+                .onSnapshot(snap2 => {
+                  const b = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+                  renderBookings(b);
+                }, err => {
+                  console.error("Realtime listener error (uid):", err);
+                });
+            } else if (currentCustomer && currentCustomer.phone) {
+              // No bookings by UID — try phone-based lookup (older bookings may not have customerId)
+              db.collection("bookings")
+                .where("phone", "==", currentCustomer.phone)
+                .orderBy("createdAt", "desc")
+                .get()
+                .then(snap2 => {
+                  const b = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+                  if (b.length) {
+                    renderBookings(b);
+                  } else {
+                    showNoBookingsFallback();
+                  }
+                })
+                .catch(err2 => {
+                  console.error("✗ Fallback phone query error:", err2);
+                  showNoBookingsFallback();
+                });
+            } else {
+              showNoBookingsFallback();
+            }
+          })
+          .catch(err => {
+            console.error("✗ Query error by UID:", err);
+            // Try phone fallback if available
+            if (currentCustomer && currentCustomer.phone) {
+              db.collection("bookings")
+                .where("phone", "==", currentCustomer.phone)
+                .get()
+                .then(snap2 => {
+                  const b = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+                  if (b.length) renderBookings(b); else showNoBookingsFallback();
+                })
+                .catch(() => showNoBookingsFallback());
+            } else {
+              showNoBookingsFallback();
+            }
+          });
+      } catch (err) {
+        console.error("✗ Setup error:", err);
+        showNoBookingsFallback();
+      }
+    }
+
+    function showNoBookingsFallback() {
+      document.getElementById("ordersList").innerHTML = `
+        <div class="empty">
+          <div class="empty-icon">🤔</div>
+          <div class="empty-text">Couldn't load bookings</div>
+          <p style="color:#9ca3af; font-size:13px; margin:10px 0;">Please make sure you've set your phone number in your profile and have created bookings.</p>
+          <a href="book.html" class="empty-link">📝 Create a New Booking</a>
+        </div>
+      `;
+    }
+
+    function renderBookings(bookings) {
+      if (bookings.length === 0) {
+        document.getElementById("ordersList").innerHTML = `
+          <div class="empty">
+            <div class="empty-icon">📭</div>
+            <div class="empty-text">No bookings yet</div>
+            <a href="book.html" class="empty-link">📝 Book Now</a>
+          </div>
+        `;
+        return;
+      }
+
+      const html = bookings.map(b => createBookingCard(b)).join("");
+      document.getElementById("ordersList").innerHTML = html;
+    }
+
+    function createBookingCard(booking) {
+      const status = booking.status || "new";
+      const hasDriver = booking.driverName && booking.driverPhone;
+      const pickupDate = booking.pickupDate ? new Date(booking.pickupDate).toLocaleDateString("en-IN") : "Not set";
+
+      return `
+        <div class="booking-card ${status}">
+          <div class="booking-header">
+            <div class="booking-route">🚚 ${booking.pickup} → ${booking.drop}</div>
+            <span class="status-badge ${status}">${status === "in-transit" ? "In Transit" : status}</span>
+          </div>
+
+          <div class="booking-details">
+            <div class="detail-item">
+              <div class="detail-label">🔑 Booking Code</div>
+              <div class="detail-value" style="font-family:monospace; font-size:16px; font-weight:bold; color:#667eea; cursor:pointer;" onclick="copyCode('${booking.bookingCode || 'N/A'}')">
+                ${booking.bookingCode || 'N/A'} 📋
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Vehicle Type</div>
+              <div class="detail-value">${booking.vehicle || "Standard"}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Distance</div>
+              <div class="detail-value">${(booking.distance || 0).toFixed(2)} km</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Price</div>
+              <div class="detail-value">₹${booking.estimatedPrice || 0}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Date</div>
+              <div class="detail-value">${pickupDate}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">Booking ID</div>
+              <div class="detail-value" style="font-family:monospace; font-size:12px;">${booking.id.slice(0,8)}...</div>
+            </div>
+          </div>
+
+          ${booking.notes ? `
+            <div style="background:#fef3c7; padding:12px; border-radius:8px; border-left:4px solid #f59e0b; margin-bottom:15px; font-size:13px;">
+              <strong style="color:#b45309;">📝 Notes:</strong> ${booking.notes}
+            </div>
+          ` : ""}
+
+          ${hasDriver ? `
+            <div class="driver-section show">
+              <h4>👨‍🚗 Driver Assigned</h4>
+              <div class="driver-info">
+                <div class="driver-info-field">
+                  <div class="driver-info-label">Driver Name</div>
+                  <div class="driver-info-value">${booking.driverName}</div>
+                </div>
+                <div class="driver-info-field">
+                  <div class="driver-info-label">Contact</div>
+                  <div class="driver-info-value"><a href="https://wa.me/91${booking.driverPhone}" target="_blank">📱 ${booking.driverPhone}</a></div>
+                </div>
+              </div>
+            </div>
+          ` : `
+            <div style="background:#fce7f3; padding:12px; border-radius:8px; border-left:4px solid #ec4899; margin:15px 0; font-size:13px;">
+              <strong style="color:#be185d;">⏳ Searching for driver...</strong>
+            </div>
+          `}
+
+          <div class="action-buttons">
+            <button class="action-btn btn-track" onclick="showDetails('${booking.id}', '${booking.pickup}', '${booking.drop}', '${booking.distance}')">ℹ️ Details</button>
+            ${hasDriver ? `
+              <a href="https://wa.me/91${booking.driverPhone}" target="_blank" class="action-btn btn-contact">💬 Message Driver</a>
+            ` : ""}
+          </div>
+        </div>
+      `;
+    }
+
+    function showDetails(id, pickup, drop, distance) {
+      alert(`📍 Booking Details\n\nID: ${id}\nFrom: ${pickup}\nTo: ${drop}\nDistance: ${distance} km`);
+    }
+
+    function copyCode(code) {
+      navigator.clipboard.writeText(code).then(() => {
+        alert(`✓ Booking code "${code}" copied to clipboard!`);
+      }).catch(err => {
+        console.error("Failed to copy:", err);
+        alert(`Booking code: ${code}`);
+      });
+    }
+
+    // Register Service Worker for offline support and PWA installation
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(err => {
+          console.warn('Service Worker registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

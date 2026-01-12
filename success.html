@@ -1,0 +1,103 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Booking Confirmed</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .booking-code-box {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin: 20px 0;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  }
+  .booking-code-box .label {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+  }
+  .booking-code-box .code {
+    font-size: 36px;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 4px;
+    cursor: pointer;
+    padding: 10px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    transition: all 0.3s;
+  }
+  .booking-code-box .code:hover {
+    background: rgba(255,255,255,0.3);
+    transform: scale(1.05);
+  }
+  .copy-hint {
+    font-size: 12px;
+    opacity: 0.8;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card fade" style="max-width: 500px; margin: 60px auto; text-align: center;">
+  <div style="font-size: 60px; margin-bottom: 20px;">✅</div>
+  <h2 style="margin-top: 0;">Booking Confirmed!</h2>
+  
+  <div class="booking-code-box">
+    <div class="label">Your Booking Code</div>
+    <div class="code" id="bookingCode" onclick="copyBookingCode()">--</div>
+    <div class="copy-hint">📋 Click to copy</div>
+  </div>
+
+  <p style="color: #666; font-size: 16px; line-height: 1.6;">
+    Thank you for booking with us! Our team will call you shortly to confirm the pickup time and final details.
+  </p>
+  <p style="color: #1e88e5; font-weight: 600; background: #f0f7ff; padding: 15px; border-radius: 8px; border-left: 4px solid #1e88e5;">
+    📞 Keep your phone handy for our confirmation call<br>
+    🔑 Share your booking code with the driver
+  </p>
+  <a href="my-orders.html" class="btn" style="margin-top: 20px;">📋 View My Bookings</a>
+  <a href="index.html" class="btn" style="margin-top: 10px; background: #6c757d;">Back to Home</a>
+</div>
+
+<a href="https://wa.me/91XXXXXXXXXX" class="whatsapp">💬 WhatsApp Support</a>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+  const db = window.db || (window.firebase && window.firebase.firestore ? window.firebase.firestore() : null);
+
+  // Get booking code from URL or session storage
+  document.addEventListener("DOMContentLoaded", function() {
+    const params = new URLSearchParams(window.location.search);
+    let bookingCode = params.get("code");
+    
+    if (!bookingCode && sessionStorage.getItem("lastBookingCode")) {
+      bookingCode = sessionStorage.getItem("lastBookingCode");
+    }
+    
+    if (bookingCode) {
+      document.getElementById("bookingCode").textContent = bookingCode;
+      console.log("✓ Displaying booking code:", bookingCode);
+    }
+  });
+
+  function copyBookingCode() {
+    const code = document.getElementById("bookingCode").textContent;
+    navigator.clipboard.writeText(code).then(() => {
+      alert(`✓ Booking code "${code}" copied to clipboard!`);
+    }).catch(() => {
+      alert(`Booking code: ${code}`);
+    });
+  }
+</script>
+
+</body>
+</html>

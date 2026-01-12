@@ -1,0 +1,52 @@
+<!-- PWA Installation Instructions -->
+<!-- Add this HTML snippet to your pages to help users install the app -->
+
+<div id="installPrompt" style="display: none; position: fixed; bottom: 20px; right: 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.15); z-index: 9999; max-width: 320px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <div style="margin-bottom: 15px;">
+    <strong style="font-size: 16px; display: block; margin-bottom: 8px;">📥 Install App</strong>
+    <p style="margin: 0; font-size: 14px; color: #666;">Get faster access - install on your device!</p>
+  </div>
+  <div style="display: flex; gap: 10px;">
+    <button id="installBtn" style="flex: 1; padding: 10px; background: #667eea; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.3s;">Install</button>
+    <button id="dismissBtn" style="flex: 1; padding: 10px; background: #f0f0f0; color: #333; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: background 0.3s;">Later</button>
+  </div>
+</div>
+
+<script>
+  let deferredPrompt;
+  const installPrompt = document.getElementById('installPrompt');
+  const installBtn = document.getElementById('installBtn');
+  const dismissBtn = document.getElementById('dismissBtn');
+
+  // Listen for the beforeinstallprompt event
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    
+    // Show the install prompt
+    installPrompt.style.display = 'block';
+  });
+
+  // Install button click
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User response to the install prompt: ${outcome}`);
+      deferredPrompt = null;
+      installPrompt.style.display = 'none';
+    }
+  });
+
+  // Dismiss button click
+  dismissBtn.addEventListener('click', () => {
+    installPrompt.style.display = 'none';
+  });
+
+  // Hide prompt if app is already installed
+  window.addEventListener('appinstalled', () => {
+    console.log('PWA was installed');
+    installPrompt.style.display = 'none';
+    deferredPrompt = null;
+  });
+</script>

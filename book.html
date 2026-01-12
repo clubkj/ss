@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Book Vehicle</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#000000">
+<meta name="description" content="A comprehensive delivery management platform">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" type="image/png" href="/images/icon-192x192.png">
+<link rel="apple-touch-icon" href="/images/icon-192x192.png">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  .user-info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+  .user-info button {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  .datetime-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 15px;
+  }
+  .datetime-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #555;
+    font-size: 14px;
+  }
+  .info {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    font-size: 16px;
+    min-height: 20px;
+  }
+</style>
+</head>
+<body>
+
+<!-- User Info Header -->
+<div class="user-info" id="userInfo" style="display:none;">
+  <div>
+    <strong id="userName">Customer</strong> | Phone: <span id="userPhone">-</span>
+  </div>
+  <button onclick="logout()">Logout</button>
+</div>
+
+<h2 class="fade">Book a Goods Vehicle</h2>
+
+<!-- Booking History Section -->
+<div class="card fade" style="background: #f0f7ff; margin-bottom: 30px; border-left: 4px solid #1e88e5;">
+  <h3 style="margin-top: 0; color: #1e88e5; display: flex; justify-content: space-between; align-items: center;">
+    📋 Your Booking History
+    <button id="toggleHistory" style="background: #1e88e5; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Show</button>
+  </h3>
+  <div id="historyContainer" style="display: none;">
+    <div id="historyList" style="max-height: 400px; overflow-y: auto;">
+      <p style="text-align: center; color: #999;">Loading your booking history...</p>
+    </div>
+  </div>
+</div>
+
+<div id="bookingForm" class="card fade">
+  <div id="debugInfo" style="background: #fff3cd; padding: 10px; margin-bottom: 15px; border-radius: 6px; font-size: 12px; color: #856404; display: none;">
+    <strong>🔧 Debug Info:</strong> Open browser console (F12) and share the error messages if booking doesn't work.
+  </div>
+  
+  <input id="name" placeholder="Name" required>
+  <input id="phone" placeholder="Phone" required>
+
+  <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+    <input id="pickup" placeholder="Pickup location" required style="flex: 1;">
+    <button type="button" onclick="selectLocationOnMap('pickup')" style="background: #667eea; color: white; border: none; padding: 10px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">📍 Map</button>
+    <button type="button" onclick="useCurrentLocation('pickup')" style="background: #25d366; color: white; border: none; padding: 10px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">📍 My Loc</button>
+  </div>
+
+  <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+    <input id="drop" placeholder="Drop location" required style="flex: 1;">
+    <button type="button" onclick="selectLocationOnMap('drop')" style="background: #667eea; color: white; border: none; padding: 10px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">📍 Map</button>
+    <button type="button" onclick="useCurrentLocation('drop')" style="background: #25d366; color: white; border: none; padding: 10px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; white-space: nowrap;">📍 My Loc</button>
+  </div>
+
+  <div class="datetime-group">
+    <div>
+      <label>Pickup Date</label>
+      <input id="pickupDate" type="date" required>
+    </div>
+    <div>
+      <label>Pickup Time</label>
+      <input id="pickupTime" type="time" required>
+    </div>
+  </div>
+
+  <div id="map"></div>
+
+  <div id="distanceInfo" class="info"></div>
+  <div id="priceInfo" class="info"></div>
+
+  <div style="margin-bottom: 20px;">
+    <label style="display: block; font-weight: bold; margin-bottom: 12px; color: #555;">Vehicle Type 🚛</label>
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px; border-radius: 10px; text-align: center;">
+      <div style="font-size: 48px; margin-bottom: 8px;">🚛</div>
+      <div style="font-weight: bold; font-size: 18px; margin-bottom: 4px;">Mini Truck</div>
+      <div style="font-size: 13px; opacity: 0.9;">Up to 2 tons | Base: ₹250</div>
+    </div>
+    <!-- Hidden select to maintain form compatibility -->
+    <select id="vehicle" style="display: none;">
+      <option value="Mini Truck">Mini Truck</option>
+    </select>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" id="loadingRequired">
+    Need loading / unloading help
+  </label>
+
+  <textarea id="notes" placeholder="Notes (optional)"></textarea>
+
+  <button id="confirmBtn" class="btn">Confirm Booking</button>
+  <div id="bookingStatus" class="status"></div>
+</div>
+
+<p class="note">
+Estimated price is based on distance only. Loading, waiting, night charges (if any)
+are confirmed during call.
+</p>
+
+<a href="https://wa.me/91XXXXXXXXXX" class="whatsapp">WhatsApp Support</a>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="js/booking.js"></script>
+
+<script>
+  // History toggle
+  function setupHistoryToggle() {
+    const toggleBtn = document.getElementById("toggleHistory");
+    const historyContainer = document.getElementById("historyContainer");
+    let isVisible = false;
+
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", function(e) {
+        e.preventDefault();
+        isVisible = !isVisible;
+        historyContainer.style.display = isVisible ? "block" : "none";
+        toggleBtn.innerText = isVisible ? "Hide" : "Show";
+      });
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", setupHistoryToggle);
+
+  // Logout function
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      window.location.href = "user.html";
+    });
+  }
+
+  // Register Service Worker for offline support and PWA installation
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js').catch(err => {
+        console.warn('Service Worker registration failed:', err);
+      });
+    });
+  }
+</script>
+
+</body>
+</html>

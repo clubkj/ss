@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Redirecting…</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="description" content="A comprehensive delivery management platform">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" type="image/png" href="/images/icon-192x192.png">
+    <link rel="apple-touch-icon" href="/images/icon-192x192.png">
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+  <body style="display:flex;align-items:center;justify-content:center;height:100vh;">
+    <div style="text-align:center;">
+      <p>Checking session…</p>
+      <p id="status">Please wait.</p>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyAI4QSMoukoQR8xivZr-0eUUc8kKARkOd4",
+        authDomain: "goods-5097f.firebaseapp.com",
+        projectId: "goods-5097f"
+      };
+      try {
+        firebase.initializeApp(firebaseConfig);
+      } catch (e) {}
+
+      const statusEl = document.getElementById('status');
+      const auth = firebase.auth();
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          statusEl.innerText = 'Signed in — redirecting to booking page...';
+          window.location.href = 'book.html';
+        } else {
+          statusEl.innerText = 'Not signed in — redirecting to login...';
+          window.location.href = 'customer-login.html';
+        }
+      });
+      // Fallback in case auth doesn't respond quickly
+      setTimeout(() => {
+        if (!auth.currentUser) window.location.href = 'customer-login.html';
+      }, 2000);
+    </script>
+
+    <script>
+      // Register Service Worker for offline support and PWA installation
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(err => {
+            console.warn('Service Worker registration failed:', err);
+          });
+        });
+      }
+    </script>
+  </body>
+</html>

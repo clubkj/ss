@@ -1,0 +1,24 @@
+# Node
+node_modules/
+
+# Firebase
+.firebase/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor folders
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# Python
+__pycache__/
+
+# Misc
+.env
+coverage/
